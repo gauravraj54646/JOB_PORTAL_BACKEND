@@ -6,15 +6,14 @@ import validator from "validator";
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-
-    minLength: [3, "Name must contain at leat 3 character."],
-    maxLength: [30, "Name cannot exceed 30 character"],
     required: true,
+    minLength: [3, "Name must cotain at least 3 characters."],
+    maxLength: [30, "Name cannot exceed 30 characters."],
   },
   email: {
     type: String,
-    validate: [validator.isEmail, "please provide valid email."],
     required: true,
+    validate: [validator.isEmail, "Please provide valid email."],
   },
   phone: {
     type: Number,
@@ -31,16 +30,16 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minLength: [8, "Password must contain at least 8 characters."],
-    maxLength: [32, "Password cannot exceed 32 characters."],
     required: true,
-    select: false,
+    minLength: [8, "Password must cantain at least 8 chatacters."],
+    maxLength: [32, "Password cannot exceed 32 characters."],
+    select: false   //check it
   },
   resume: {
     public_id: String,
     url: String,
   },
-  coverLeter: {
+  coverLetter: {
     type: String,
   },
   role: {
@@ -50,10 +49,11 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    dafault: Date.now,
+    default: Date.now,
   },
 });
 
+//before save 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -61,12 +61,14 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-userSchema.methods.comparePassword = async function (enterPassword) {
-  return await bcrypt.compare(enterPassword, this.password);
+userSchema.methods.comparePassword = async function (enteredPassword) {    //user want to get password
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
+
+//token generate and give expire date , validation for furthur login
 userSchema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {    //this_id = user ki id is their that we login
     expiresIn: process.env.JWT_EXPIRE,
   });
 };

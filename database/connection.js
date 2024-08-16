@@ -1,14 +1,12 @@
+
 import mongoose from "mongoose";
 
-export const connection = () => {
-  mongoose
-    .connect(process.env.MONGO_URI, {
-      dbName: "JOB_PORTOL_WIYH_AUTOMATION",
+export const connection = ()=>{
+    mongoose.connect(process.env.MONGO_URI, {
+        dbName: "JOB_PORTAL_WITH_AUTOMATION"
+    }).then(()=>{
+        console.log("Connected to database.")
+    }).catch(err=>{
+        console.log(`Some error occured while connecting to database: ${err}`)
     })
-    .then(() => {
-      console.log(`connected to database ${process.env.MONGO_URI}`);
-    })
-    .catch((err) => {
-      console.log(`Some error is occured while connecting to database ${err}`);
-    });
-};
+}

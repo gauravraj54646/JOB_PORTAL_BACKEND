@@ -8,9 +8,8 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const { name, email, phone, address, coverLetter } = req.body;
   if (!name || !email || !phone || !address || !coverLetter) {
-    return next(new ErrorHandler("All fields are required!", 400));
+    return next(new ErrorHandler("All fields are required.", 400));
   }
-
   const jobSeekerInfo = {
     id: req.user._id,
     name,
@@ -20,23 +19,21 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     coverLetter,
     role: "Job Seeker",
   };
-  const jobDetailes = await Job.findById(id);
-  if (!jobDetailes) {
-    return next(new ErrorHandler("Job Not found", 400));
+  const jobDetails = await Job.findById(id);
+  if (!jobDetails) {
+    return next(new ErrorHandler("Job not found!.", 404));
   }
-
   const isAlreadyApplied = await Application.findOne({
-    "jobInfo.id": id,
-    " jobSeekerInfo.id": req.user._id,
+    "jobInfo.id": id,     //jobInfo.jobId
+    "jobSeekerInfo.id": req.user._id,
   });
   if (isAlreadyApplied) {
     return next(
-      new ErrorHandler("you have Already Applied for this Job!", 400)
+      new ErrorHandler("You have already applied for this job.", 400)
     );
   }
-
   if (req.files && req.files.resume) {
-    const {} = req.files;
+    const { resume } = req.files;
     try {
       const cloudinaryResponse = await cloudinary.uploader.upload(
         resume.tempFilePath,
@@ -44,10 +41,9 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
           folder: "Job_Seekers_Resume",
         }
       );
-
       if (!cloudinaryResponse || cloudinaryResponse.error) {
         return next(
-          new ErrorHandler("failed to upload Resume to Cloudinary!", 400)
+          new ErrorHandler("Failed to upload resume to cloudinary.", 500)
         );
       }
       jobSeekerInfo.resume = {
@@ -55,38 +51,37 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
         url: cloudinaryResponse.secure_url,
       };
     } catch (error) {
-      return next(new ErrorHandler("Failed to upload Resume", 500));
+      return next(new ErrorHandler("Failed to upload resume!", 500));
     }
-  } else {
+  } else {    
     if (req.user && !req.user.resume.url) {
-      return next(new ErrorHandler("Please Upolad your resume !", 400));
+      return next(new ErrorHandler("Please upload your resume.", 400));
     }
     jobSeekerInfo.resume = {
       public_id: req.user && req.user.resume.public_id,
-      ulr: req.user && req.user.resume.url,
+      url: req.user && req.user.resume.url,
     };
   }
-
   const employerInfo = {
-    id: jobDetailes.postedBy,
+    id: jobDetails.postedBy,
     role: "Employer",
   };
-
   const jobInfo = {
     jobId: id,
-    jobtitle: jobDetailes.title,
+    jobTitle: jobDetails.title,
   };
-  const application = await application.create({
+  const application = await Application.create({
     jobSeekerInfo,
     employerInfo,
     jobInfo,
   });
   res.status(201).json({
     success: true,
-    message: "Application Submitted",
+    message: "Application submitted.",
     application,
   });
 });
+
 export const employerGetAllApplication = catchAsyncErrors(
   async (req, res, next) => {
     const { _id } = req.user;
@@ -94,12 +89,13 @@ export const employerGetAllApplication = catchAsyncErrors(
       "employerInfo.id": _id,
       "deletedBy.employer": false,
     });
-    req.status(200).json({
+    res.status(200).json({
       success: true,
       applications,
     });
   }
 );
+
 export const jobSeekerGetAllApplication = catchAsyncErrors(
   async (req, res, next) => {
     const { _id } = req.user;
@@ -107,17 +103,18 @@ export const jobSeekerGetAllApplication = catchAsyncErrors(
       "jobSeekerInfo.id": _id,
       "deletedBy.jobSeeker": false,
     });
-    req.status(200).json({
+    res.status(200).json({
       success: true,
       applications,
     });
   }
 );
+
 export const deleteApplication = catchAsyncErrors(async (req, res, next) => {
-  const {} = req.params;
+  const { id } = req.params;
   const application = await Application.findById(id);
-  if (!Application) {
-    return next(new ErrorHandler("Application not found.", 400));
+  if (!application) {
+    return next(new ErrorHandler("Application not found.", 404));
   }
   const { role } = req.user;
   switch (role) {
@@ -129,18 +126,20 @@ export const deleteApplication = catchAsyncErrors(async (req, res, next) => {
       application.deletedBy.employer = true;
       await application.save();
       break;
+
     default:
-      console.log("default case for Application delete function.");
+      console.log("Default case for application delete function.");
       break;
   }
+
   if (
-    (application.deletedBy.employer === true) &
-    (application.deletedBy.employer === true)
+    application.deletedBy.employer === true &&
+    application.deletedBy.jobSeeker === true
   ) {
     await application.deleteOne();
   }
   res.status(200).json({
-    succes: true,
-    message: "Application Deleted!",
+    success: true,
+    message: "Application Deleted.",
   });
 });

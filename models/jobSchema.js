@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+//import userSchema from "./userSchema.js";
 const jobSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -43,7 +43,7 @@ const jobSchema = new mongoose.Schema({
   },
   personalWebsite: {
     title: String,
-    url: String
+    url: String, //required: true
   },
   jobNiche: {
     type: String,

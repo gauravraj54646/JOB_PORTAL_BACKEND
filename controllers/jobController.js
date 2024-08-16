@@ -1,36 +1,37 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
-
 import { Job } from "../models/jobSchema.js";
+import { User } from "../models/userSchema.js";
 
 export const postJob = catchAsyncErrors(async (req, res, next) => {
   const {
     title,
     jobType,
     location,
-    introduction,
     companyName,
+    introduction,
     responsibilities,
     qualifications,
     offers,
     salary,
     hiringMultipleCandidates,
-    personalWebsite: { personalWebsiteTitle, personalWebsiteUrl },
+    personalWebsiteTitle,
+    personalWebsiteUrl,
     jobNiche,
-    newsLettersSent,
+    
   } = req.body;
   if (
     !title ||
     !jobType ||
     !location ||
-    !introduction ||
     !companyName ||
+    !introduction ||
     !responsibilities ||
     !qualifications ||
     !salary ||
     !jobNiche
   ) {
-    return next(new ErrorHandler("Please provide full job Details", 400));
+    return next(new ErrorHandler("Please provide full job details.", 400));
   }
   if (
     (personalWebsiteTitle && !personalWebsiteUrl) ||
@@ -38,18 +39,18 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(
       new ErrorHandler(
-        "Provide both the Website url title , or leave both blank",
+        "Provide both the website url and title, or leave both blank.",
         400
       )
     );
   }
-  const postedBy = req.user._id;
+  const postedBy = req.user._id;  //who post job
   const job = await Job.create({
     title,
     jobType,
     location,
-    introduction,
     companyName,
+    introduction,
     responsibilities,
     qualifications,
     offers,
@@ -57,15 +58,14 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
     hiringMultipleCandidates,
     personalWebsite: {
       title: personalWebsiteTitle,
-      url: personalWebsiteUrl,
+      url: personalWebsiteUrl
     },
     jobNiche,
     postedBy,
   });
-
-  res.status(201).json({
+  res.status(201).json({   //job created successfully
     success: true,
-    message: "Job Posted Successfully!",
+    message: "Job posted successfully!.",
     job,
   });
 });
@@ -74,10 +74,10 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   const { city, niche, searchKeyword } = req.query;
   const query = {};
   if (city) {
-    query.location = city; //query.{location:{$regex:city , $options: "i"}},
+    query.location = city;
   }
   if (niche) {
-    query.jobNiche = niche; //query.{location: {$regex: city,$options: "i"}},
+    query.jobNiche = niche;
   }
   if (searchKeyword) {
     query.$or = [
@@ -86,14 +86,14 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
       { introduction: { $regex: searchKeyword, $options: "i" } },
     ];
   }
-
-  const jobs = await Job.find(query);
+  const jobs = await Job.find(query);  // we find jobs by query
   res.status(200).json({
     success: true,
     jobs,
     count: jobs.length,
   });
 });
+
 export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
   const myJobs = await Job.find({ postedBy: req.user._id });
   res.status(200).json({
@@ -101,29 +101,31 @@ export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
     myJobs,
   });
 });
+
 export const deleteJob = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const job = await Job.findById(id);
+  // console.log(job)
   if (!job) {
-    return next(new ErrorHandler("Oops! job not found", 404));
+    return next(new ErrorHandler("Oops! Job not found.", 404));  
   }
   await job.deleteOne();
   res.status(200).json({
     success: true,
-    message: "Job deleted.",
+    message: "Job deleted!.",
   });
 });
+
 export const getASingleJob = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
-  const job = await job.findById(id);
+  const job = await Job.findById(id);
   if (!job) {
     return next(new ErrorHandler("Job not found.", 404));
   }
   res.status(200).json({
-    succes: true,
+    success: true,
     job,
   });
 });
 
-
-
+//http://localhost:5173/blogs/jbdgdtdvtubfybg?keyword=It;
