@@ -32,7 +32,7 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
-app.use('/',(req,res)=>{
+app.get('/',(req,res)=>{
   res.send("Hello");
 })
 app.use("/api/v1/user", userRouter);
