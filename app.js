@@ -33,6 +33,11 @@ app.use(
   })
 );
 
+app.get('/',(req,res)=>{
+  res.send("Hello fresher! , get your firstjob/internship here !..");
+})
+
+
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
