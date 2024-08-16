@@ -9,6 +9,6 @@ cloudinary.v2.config({
 
 
 
-app.listen(process.env.PORT, () => {
-  console.log(`server is listening on port ${process.env.PORT}.`);
+app.listen("https://job-portal-frontend-khaki-mu.vercel.app", () => {
+  console.log(`server is listening on port ${"https://job-portal-frontend-khaki-mu.vercel.app"}.`);
 });
