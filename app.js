@@ -16,7 +16,7 @@ config({ path: "./config/config.env" });
 
 app.use(   //for frontend and backend connectection
   cors({
-    origin: ["https://job-portal-frontend-khaki-mu.vercel.app"],
+    origin: [process.env.FRONTEND_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
