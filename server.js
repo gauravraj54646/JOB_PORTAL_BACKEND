@@ -8,7 +8,7 @@ cloudinary.v2.config({
 });
 
 app.get('/',(req,res)=>{
-  res.send("Hello");
+  res.send("Hello fresher! , get your firstjob/internship here !..");
 })
 
 app.listen(process.env.PORT, () => {
