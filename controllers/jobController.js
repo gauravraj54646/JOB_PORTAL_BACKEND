@@ -7,29 +7,34 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
   const {
     title,
     jobType,
-    location,
+    // location,
+    Year,
     companyName,
     introduction,
     responsibilities,
     qualifications,
     offers,
     salary,
-    hiringMultipleCandidates,
+    // hiringMultipleCandidates,
+    Opportunities,
     personalWebsiteTitle,
     personalWebsiteUrl,
-    jobNiche,
+    // jobNiche,
+    jobFields,
     
   } = req.body;
   if (
     !title ||
     !jobType ||
-    !location ||
+    // !location ||
+    ! Year||
     !companyName ||
     !introduction ||
     !responsibilities ||
     !qualifications ||
     !salary ||
-    !jobNiche
+    // !jobNiche
+    !jobFields
   ) {
     return next(new ErrorHandler("Please provide full job details.", 400));
   }
@@ -48,19 +53,21 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
   const job = await Job.create({
     title,
     jobType,
-    location,
+    // location,
+    Year,
     companyName,
     introduction,
     responsibilities,
     qualifications,
     offers,
     salary,
-    hiringMultipleCandidates,
+    // hiringMultipleCandidates,
+    Opportunities,
     personalWebsite: {
       title: personalWebsiteTitle,
       url: personalWebsiteUrl
     },
-    jobNiche,
+    jobFields,
     postedBy,
   });
   res.status(201).json({   //job created successfully
@@ -74,10 +81,12 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   const { city, niche, searchKeyword } = req.query;
   const query = {};
   if (city) {
-    query.location = city;
+    // query.location = city;
+    query.Year = city;
   }
   if (niche) {
-    query.jobNiche = niche;
+    // query.jobNiche = niche;
+    query.jobFields = niche;
   }
   if (searchKeyword) {
     query.$or = [

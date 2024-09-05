@@ -4,11 +4,14 @@ import { postJob, getAllJobs, getASingleJob, getMyJobs, deleteJob } from "../con
 
 const router = express.Router();
 
-router.post("/post", isAuthenticated, isAuthorized("Employer"), postJob);
+router.post("/post", isAuthenticated, isAuthorized("T/I&Pcell"), postJob);
 router.get("/getall", getAllJobs);
-router.get("/getmyjobs", isAuthenticated, isAuthorized("Employer"), getMyJobs);
-router.delete("/delete/:id", isAuthenticated, isAuthorized("Employer"), deleteJob);
+router.get("/getmyjobs", isAuthenticated, isAuthorized("T/I&Pcell"), getMyJobs);
+router.delete("/delete/:id", isAuthenticated, isAuthorized("T/I&Pcell"), deleteJob);
 router.get("/get/:id", getASingleJob)  // lets add is authenticated;
+
+
+//Employer
 
 
 

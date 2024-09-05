@@ -8,9 +8,9 @@ const jobSchema = new mongoose.Schema({
   jobType: {
     type: String,
     required: true,
-    enum: ["Full-time", "Part-time"],
+    enum: ["Full-time-employement", "Intern+full-time-employement","Internship","hackthons"],
   },
-  location: {
+  scrollYear: {
     type: String,
     required: true,
   },
@@ -36,19 +36,30 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  hiringMultipleCandidates: {
+  // hiringMultipleCandidates: {
+  //   type: String,
+  //   default: "No",
+  //   enum: ["Yes", "No"],
+  // },
+  Opportunities: {
     type: String,
     default: "No",
-    enum: ["Yes", "No"],
+    enum: ["On-Campus", "Of-Campus","Club"],
   },
   personalWebsite: {
     title: String,
     url: String, //required: true
   },
-  jobNiche: {
+  // jobNiche: {
+  //   type: String,
+  //   required: true,
+  // },
+  jobFields: {
     type: String,
     required: true,
   },
+  
+
   newsLettersSent: {
     type: Boolean,
     default: false,

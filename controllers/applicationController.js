@@ -10,14 +10,16 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
   if (!name || !email || !phone || !address || !coverLetter) {
     return next(new ErrorHandler("All fields are required.", 400));
   }
-  const jobSeekerInfo = {
+  const studentInfo = {
     id: req.user._id,
     name,
+    enrollment,
+    brach,
     email,
     phone,
     address,
     coverLetter,
-    role: "Job Seeker",
+    role: "Student",
   };
   const jobDetails = await Job.findById(id);
   if (!jobDetails) {
@@ -25,7 +27,9 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
   }
   const isAlreadyApplied = await Application.findOne({
     "jobInfo.id": id,     //jobInfo.jobId
-    "jobSeekerInfo.id": req.user._id,
+    // "jobSeekerInfo.id": req.user._id,
+    "studentInfo.id": req.user._id,
+
   });
   if (isAlreadyApplied) {
     return next(
@@ -46,7 +50,8 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
           new ErrorHandler("Failed to upload resume to cloudinary.", 500)
         );
       }
-      jobSeekerInfo.resume = {
+      // jobSeekerInfo.resume = {
+       studentInfo.resume = {
         public_id: cloudinaryResponse.public_id,
         url: cloudinaryResponse.secure_url,
       };
@@ -57,22 +62,27 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     if (req.user && !req.user.resume.url) {
       return next(new ErrorHandler("Please upload your resume.", 400));
     }
-    jobSeekerInfo.resume = {
+    // jobSeekerInfo.resume = {
+    studentInfo.resume={
       public_id: req.user && req.user.resume.public_id,
       url: req.user && req.user.resume.url,
     };
   }
-  const employerInfo = {
+  // const employerInfo = {
+   const TIPInfo = {
     id: jobDetails.postedBy,
-    role: "Employer",
+    // role: "Employer",
+    role: "Student",
   };
   const jobInfo = {
     jobId: id,
     jobTitle: jobDetails.title,
   };
   const application = await Application.create({
-    jobSeekerInfo,
-    employerInfo,
+    // jobSeekerInfo,
+    // employerInfo,
+    studentInfo,
+    TIPInfo,
     jobInfo,
   });
   res.status(201).json({
@@ -86,7 +96,8 @@ export const employerGetAllApplication = catchAsyncErrors(
   async (req, res, next) => {
     const { _id } = req.user;
     const applications = await Application.find({
-      "employerInfo.id": _id,
+      // "employerInfo.id": _id,
+      "TIPInfo.id": _id,
       "deletedBy.employer": false,
     });
     res.status(200).json({
@@ -100,7 +111,9 @@ export const jobSeekerGetAllApplication = catchAsyncErrors(
   async (req, res, next) => {
     const { _id } = req.user;
     const applications = await Application.find({
-      "jobSeekerInfo.id": _id,
+      "studentInfo.id": _id,
+     // "jobSeekerInfo.id": _id,
+     
       "deletedBy.jobSeeker": false,
     });
     res.status(200).json({
@@ -118,13 +131,13 @@ export const deleteApplication = catchAsyncErrors(async (req, res, next) => {
   }
   const { role } = req.user;
   switch (role) {
-    case "Job Seeker":
-      application.deletedBy.jobSeeker = true;
+    case "Student":  //Job Seeker
+      application.deletedBy.jobSeeker = true;   //check
       await application.save();
       break;
-    case "Employer":
-      application.deletedBy.employer = true;
-      await application.save();
+    case "T/I&Pcell":  //Employer
+      application.deletedBy.employer = true;    //check
+      await application.save();         
       break;
 
     default:

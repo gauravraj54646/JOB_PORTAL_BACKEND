@@ -4,27 +4,29 @@ import { User } from "../models/userSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 import { sendToken } from "../utils/jwtToken.js";
 
-export const register = catchAsyncErrors(async (req, res, next) => {
+export const register = catchAsyncErrors (async (req, res, next) => {
   try {
     const {
       name,
       email,
+      enrollment,
+      branch,
       phone,
       address,
       password,
       role,
-      firstNiche,
-      secondNiche,
-      thirdNiche,
+      firstSkills,    //firstNiche
+      secondSkills,
+      thirdSkills,
       coverLetter,
     } = req.body;
 
-    if (!name || !email || !phone || !address || !password || !role) {
+    if (!name || !email || !phone || !address || !password || !role || !enrollment || !branch) {
       return next(new ErrorHandler("All fileds are required.", 400));
     }
-    if (role === "Job Seeker" && (!firstNiche || !secondNiche || !thirdNiche)) {
+    if (role === "Student" && (!firstSkills || !seconSkills || !thirdSkills )) {
       return next(
-        new ErrorHandler("Please provide your prefered job niches.", 400)
+        new ErrorHandler("Please provide your prefered Skills.", 400)
       );
     }
     const existingUser = await User.findOne({ email });
@@ -34,14 +36,16 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     const userData = {
       name,
       email,
+      enrollment,
+      branch,
       phone,
       address,
       password,
       role,
-      niches: {
-        firstNiche,
-        secondNiche,
-        thirdNiche,
+      skills: {
+        firstSkills,
+        secondSkills,
+        thirdSkills,
       },
       coverLetter,
     };
@@ -121,20 +125,22 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     phone: req.body.phone,
+    enrollment: req.body.enrollment,
+    branch: req.body.branch,
     address: req.body.address,
     coverLetter: req.body.coverLetter,
-    niches: {
-      firstNiche: req.body.firstNiche,
-      secondNiche: req.body.secondNiche,
-      thirdNiche: req.body.thirdNiche,
+    skills: {
+      firstSkills: req.body.firstSkills,
+      secondSkills: req.body.secondSkills,
+      thirdSkills: req.body.thirdSkills,
     },
   };
 
-  const { firstNiche, secondNiche, thirdNiche } = newUserData.niches;
+  const { firstSkills, secondSkills, thirdSkills } = newUserData.skills;
 
   if (
-    req.user.role === "Job Seeker" &&
-    (!firstNiche || !secondNiche || !thirdNiche)
+    req.user.role === "Student" &&
+    (!firstSkills || !secondSkills || !thirdSkills)
   ) {
     return next(
       new ErrorHandler("Please provide your all preferred job niches.", 400)
@@ -168,6 +174,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     message: "Profile updated.",
   });
 });
+
 
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("+password");

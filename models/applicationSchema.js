@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import validator from "validator";
 const applicationSchema = new mongoose.Schema({
-  jobSeekerInfo: {
+  // jobSeekerInfo: {
+  studentInfo:{
     id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -11,15 +12,14 @@ const applicationSchema = new mongoose.Schema({
       required: true,
     },
 
-    
-    //  Enrollment: {
-    //   type: String,
-    //   required: true,
-    // },
-    // Branch:{
-    //   type:Number,
-    //     required: true,
-    // }
+     enrollment: {
+      type: String,
+      required: true,
+    },
+    branch:{
+      type:Number,
+        required: true,
+    },
     
     email: {
       type: String,
@@ -44,11 +44,12 @@ const applicationSchema = new mongoose.Schema({
     },
     role: {
       type: String,
-      enum: ["Job Seeker"],
+      enum: ["Student"],  // enum: ["Job Seeker"],
       required: true,
     },
   },
-  employerInfo: {
+  // employerInfo: {
+  TIPInfo : {
     id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -71,11 +72,13 @@ const applicationSchema = new mongoose.Schema({
     },
   },
   deletedBy: {
-    jobSeeker: {
+    // jobSeeker: {
+    Student:{
       type: Boolean,
       default: false,
     },
-    employer: {
+    // employer: {
+    TIP:{
       type: Boolean,
       default: false,
     },

@@ -23,10 +23,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  niches: {
-    firstNiche: String,
-    secondNiche: String,
-    thirdNiche: String,
+  enrollment: {
+    type: Number,
+    required: true,
+  },
+  branch:{
+    type: String,
+    required: true,
+  },
+  skills: {
+    firstSkills: String,
+    secondSkills: String,
+    thirdSkills: String,
   },
   password: {
     type: String,
@@ -45,7 +53,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ["Job Seeker", "Employer"],
+    enum: ["Student", "T/I&Pcell"],
   },
   createdAt: {
     type: Date,
