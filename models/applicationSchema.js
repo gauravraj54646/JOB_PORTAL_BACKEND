@@ -10,6 +10,17 @@ const applicationSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+
+    
+    //  Enrollment: {
+    //   type: String,
+    //   required: true,
+    // },
+    // Branch:{
+    //   type:Number,
+    //     required: true,
+    // }
+    
     email: {
       type: String,
       required: true,
